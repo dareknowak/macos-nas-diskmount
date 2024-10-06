@@ -2,7 +2,8 @@
 MacOS NAS disk mount via plist
 
 # Problem and solution
-Whenever my Mac mini goes to sleep or is rebooted, I have to manually reconnect my NAS drive using Finder. For instance, if I want to listen to FLAC files in Foobar2000 and the drive becomes disconnected, my music library becomes inaccessible. I must then remember to reconnect the drive manually by navigating to Finder and the network and attaching it."
+* Whenever my Mac mini goes to sleep or is rebooted, I have to manually reconnect, mount my NAS drives back using Finder. For instance, if I want to listen to FLAC files in Foobar2000 and the drive becomes disconnected, my music library becomes inaccessible. I must then remember to reconnect the drive manually by navigating to Finder and the network and attaching it back.
+* Use the following script and .plist to connect (mount drive) and keep alive connection even after the OS has been rebooted or went to sleep
 
 # Prerequisites 
 * Store the NAS password in macOS Keychain: You can store the password in the Keychain using the security command. Open the terminal and run the following command to store the password for your NAS server:
