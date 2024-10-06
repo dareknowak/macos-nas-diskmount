@@ -5,6 +5,13 @@ MacOS NAS disk mount via plist
 Whenever my Mac mini goes to sleep or is rebooted, I have to manually reconnect my NAS drive using Finder. For instance, if I want to listen to FLAC files in Foobar2000 and the drive is disconnected, my music library becomes inaccessible. I must then remember to reconnect the drive manually by navigating to the network and attaching it."
 
 # Prerequisites 
+Store the NAS password in macOS Keychain: You can store the password in the Keychain using the security command. Open the terminal and run the following command to store the password for your NAS server:
+
+`security add-generic-password -a "user" -s "NAS617DB0" -w`
+
+Replace "user" with your NAS username.
+Replace "NAS617DB0" with a label to identify this password (the server name or an appropriate description).
+This command will prompt you to enter the password and store it in your Keychain.
 
 Create the Directory in Your Home Directory:
 

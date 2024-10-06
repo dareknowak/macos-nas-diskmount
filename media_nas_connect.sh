@@ -9,7 +9,9 @@ MOUNT_POINT="$HOME/NAS_media_mountpoint"
 SERVER_ADDRESS="NAS617DB0"
 SHARE_NAME="Media"
 USERNAME="username"
-PASSWORD="password"
+
+# Retrieve the password from the Keychain
+PASSWORD=$(security find-generic-password -a "$USERNAME" -s "$SERVER_ADDRESS" -w)
 
 # Log the current timestamp and operation start
 echo "$(date): Attempting to remount network drive" >> "$LOG_FILE"
