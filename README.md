@@ -36,7 +36,7 @@ No Permissions Issues: Since this directory is inside your home folder, your use
 
 # Logs:
 
-Your log file is at `/tmp/remount_network_drive.log` and `remount_network_drive`, you can use following to tail logs:
+* Your log file is at `/tmp/remount_network_drive.log` and `remount_network_drive`, you can use following to tail logs:
 
 `tail -f /tmp/remount_network_drive.log`
 `tail -f /tmp/remount_network_drive_error.log`
