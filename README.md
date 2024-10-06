@@ -26,3 +26,12 @@ Load the Agent or reboot the OS*:
 
 #### NOTE: the agent definition will also keep it alive and load at run (OS restart), see .plist code<br />
 #### NOTE: tested on macOS Sonoma, Sequoia 15.0.1 (24A348)
+
+# Logs:
+
+Your log file is at `/tmp/remount_network_drive.log` and `remount_network_drive`, you can use following to tail logs:
+
+`tail -f /tmp/remount_network_drive.log`
+`tail -f /tmp/remount_network_drive_error.log`
+or use following to tail both logs
+`tail -f /tmp/remount*`
