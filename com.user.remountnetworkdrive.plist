@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.user.remountnetworkdrive</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/bash</string>
+        <string>/users/yourusername/tools/nas_media_connect/media_nas_connect.sh</string>
+    </array>
+
+    <key>StandardOutPath</key>
+    <string>/tmp/remount_network_drive.log</string>
+    <key>StandardErrorPath</key>
+    <string>/tmp/remount_network_drive_error.log</string>
+
+    <!-- Run the script at load -->
+    <key>RunAtLoad</key>
+    <true/>
+
+    <!-- Keep the script alive and retry if it fails -->
+    <key>KeepAlive</key>
+    <true/>
+
+    <!-- Start the script when mounting volumes -->
+    <key>StartOnMount</key>
+    <true/>
+</dict>
+</plist>
+
