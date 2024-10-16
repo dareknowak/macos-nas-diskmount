@@ -18,21 +18,21 @@ MacOS NAS disk mount via plist
 This command will prompt you to enter the password and store it in your Keychain.
 
 * Create the Directory in Your Home Directory:
-
 `mkdir -p ~/Media`
 
 * Update Your Script to use this new mount point and nas server name:
 `MOUNT_POINT="$HOME/Media"`
 `SERVER_ADDRESS="NAS617DB0"`
 
-No Permissions Issues: Since this directory is inside your home folder, your user has full permissions to create and manage it.
+No Permissions Issue: Since this directory is inside your home folder, your user has full permissions to create and manage it.
 
-`chmod +x /usr/local/bin/remount_network_drive.sh`
+* Drop the script in convenient directory, and set execute permission e.g.
+`chmod +x /usr/local/bin/media_nas_connect.sh`
 
 * Move the .plist to /Library/LaunchAgents/:
 `sudo mv com.user.remountnetworkdrive.plist /Library/LaunchDaemons/`
 
-* Load the Agent or reboot the OS*:
+* Load the Agent or reboot the macOS*:
 `launchctl load /Library/LaunchAgents/com.user.remountnetworkdrive.plist`
 
 #### NOTE: the agent definition will also keep it alive and load at run (OS restart), see .plist code<br />
