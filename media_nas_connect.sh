@@ -4,6 +4,28 @@
 LOG_FILE="/tmp/remount_network_drive.log"
 ERROR_LOG_FILE="/tmp/remount_network_drive_error.log"
 
+# Set log retention period in days (you can change this value as needed)
+LOG_RETENTION_DAYS=1
+
+# Function to back up logs and clean old backups
+backup_and_clean_logs() {
+    local log_file=$1
+    local backup_file="${log_file}.$(date +%Y%m%d).backup"
+
+    # Back up the log file (only if it exists)
+    if [ -f "$log_file" ]; then
+        mv "$log_file" "$backup_file"
+        echo "$(date): Log file backed up to $backup_file" > "$log_file"
+    fi
+
+    # Remove log backups older than the specified retention period
+    find "$(dirname "$log_file")" -name "$(basename "$log_file").*.backup" -mtime +$LOG_RETENTION_DAYS -exec rm {} \;
+}
+
+# Backup and clean both log files
+backup_and_clean_logs "$LOG_FILE"
+backup_and_clean_logs "$ERROR_LOG_FILE"
+
 # Replace with your network drive information
 MOUNT_POINT="$HOME/NAS_media_mountpoint"
 SERVER_ADDRESS="NAS617DB0"
