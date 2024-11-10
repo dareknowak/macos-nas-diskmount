@@ -15,7 +15,7 @@ backup_and_clean_logs() {
     # Back up the log file (only if it exists)
     if [ -f "$log_file" ]; then
         mv "$log_file" "$backup_file"
-        echo "$(date): Log file backed up to $backup_file" > "$log_file"
+        echo "$(date): Log file backed up to $backup_file" >> "$log_file"
     fi
 
     # Remove log backups older than the specified retention period

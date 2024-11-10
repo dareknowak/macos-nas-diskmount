@@ -29,11 +29,11 @@ No Permissions Issue: Since this directory is inside your home folder, your user
 * Drop the script in convenient directory, and set execute permission e.g.
 `chmod +x /usr/local/bin/media_nas_connect.sh`
 
-* Move the .plist to /Library/LaunchAgents/:
-`sudo mv com.user.remountnetworkdrive.plist /Library/LaunchDaemons/`
+* Move the .plist to ~/Library/LaunchAgents/:
+`sudo mv com.user.remountnetworkdrive.plist ~/Library/LaunchDaemons/`
 
 * Load the Agent or reboot the macOS*:
-`launchctl load /Library/LaunchAgents/com.user.remountnetworkdrive.plist`
+`launchctl load ~/Library/LaunchAgents/com.user.remountnetworkdrive.plist`
 
 #### NOTE: the agent definition will also keep it alive and load at run (OS restart), see .plist code<br />
 #### NOTE: tested on macOS Sonoma, Sequoia 15.0.1 (24A348)
