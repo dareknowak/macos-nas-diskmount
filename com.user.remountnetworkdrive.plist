@@ -4,29 +4,21 @@
 <dict>
     <key>Label</key>
     <string>com.user.remountnetworkdrive</string>
-
     <key>ProgramArguments</key>
     <array>
         <string>/bin/bash</string>
         <string>/users/yourusername/tools/nas_media_connect/media_nas_connect.sh</string>
     </array>
-
     <key>StandardOutPath</key>
     <string>/tmp/remount_network_drive.log</string>
     <key>StandardErrorPath</key>
     <string>/tmp/remount_network_drive_error.log</string>
-
-    <!-- Run the script at load -->
     <key>RunAtLoad</key>
     <true/>
-
-    <!-- Keep the script alive and retry if it fails -->
-    <key>KeepAlive</key>
-    <true/>
-
-    <!-- Start the script when mounting volumes -->
-    <key>StartOnMount</key>
-    <true/>
+    <key>WatchPaths</key>
+    <array>
+        <string>/tmp/.SleepResume</string>
+    </array>
 </dict>
 </plist>
 
