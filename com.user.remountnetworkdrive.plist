@@ -8,25 +8,32 @@
     <key>ProgramArguments</key>
     <array>
         <string>/bin/bash</string>
-        <string>/users/yourusername/tools/nas_media_connect/media_nas_connect.sh</string>
+        <string>/path/to/media_nas_connect.sh</string>
     </array>
 
     <key>StandardOutPath</key>
-    <string>/tmp/remount_network_drive.log</string>
+    <string>/Users/YOUR_MAC_USERNAME/Library/Logs/remount_network_drive/remount_network_drive.log</string>
     <key>StandardErrorPath</key>
-    <string>/tmp/remount_network_drive_error.log</string>
+    <string>/Users/YOUR_MAC_USERNAME/Library/Logs/remount_network_drive/remount_network_drive_error.log</string>
 
     <!-- Run the script at load -->
     <key>RunAtLoad</key>
     <true/>
 
-    <!-- Keep the script alive and retry if it fails -->
+    <!-- Only restart the script if it exits with a non-zero status (failure).
+         SuccessfulExit: false means "do NOT keep alive after a clean exit". -->
     <key>KeepAlive</key>
-    <true/>
+    <dict>
+        <key>SuccessfulExit</key>
+        <false/>
+    </dict>
 
-    <!-- Start the script when mounting volumes -->
+    <!-- Minimum seconds between restarts to prevent rapid respawn loops -->
+    <key>ThrottleInterval</key>
+    <integer>30</integer>
+
+    <!-- Start the script when volumes are mounted -->
     <key>StartOnMount</key>
     <true/>
 </dict>
 </plist>
-
