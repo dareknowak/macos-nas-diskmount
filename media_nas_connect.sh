@@ -11,6 +11,11 @@ mkdir -p "$LOG_DIR"
 # Set log retention period in days
 LOG_RETENTION_DAYS=1
 
+# Function to check if the network drive is already mounted and writable
+is_mounted() {
+    mount | grep -q "$MOUNT_POINT" && [ -w "$MOUNT_POINT" ]
+}
+
 # Function to URL-encode a string using pure bash (no Python dependency)
 url_encode() {
     local string="$1"
@@ -34,7 +39,6 @@ backup_and_clean_logs() {
 
     if [ -f "$log_file" ]; then
         mv "$log_file" "$backup_file"
-        echo "$(date): Log file $log_file backed up to $backup_file" >> "/tmp/log_management.log"
     fi
 
     find "$(dirname "$log_file")" -name "$(basename "$log_file")*.backup" -mtime +$LOG_RETENTION_DAYS -exec rm {} \; || true
@@ -68,11 +72,6 @@ if [ ! -d "$MOUNT_POINT" ]; then
     echo "$(date): Mount point $MOUNT_POINT does not exist, creating it..." >> "$LOG_FILE"
     mkdir -p "$MOUNT_POINT"
 fi
-
-# Function to check if the network drive is already mounted and writable
-is_mounted() {
-    mount | grep -q "$MOUNT_POINT" && [ -w "$MOUNT_POINT" ]
-}
 
 if ! is_mounted; then
     ENCODED_PASSWORD=$(url_encode "$PASSWORD")

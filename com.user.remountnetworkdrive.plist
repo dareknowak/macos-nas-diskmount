@@ -11,11 +11,6 @@
         <string>/path/to/media_nas_connect.sh</string>
     </array>
 
-    <key>StandardOutPath</key>
-    <string>/Users/YOUR_MAC_USERNAME/Library/Logs/remount_network_drive/remount_network_drive.log</string>
-    <key>StandardErrorPath</key>
-    <string>/Users/YOUR_MAC_USERNAME/Library/Logs/remount_network_drive/remount_network_drive_error.log</string>
-
     <!-- Run the script at load -->
     <key>RunAtLoad</key>
     <true/>
