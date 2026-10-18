@@ -13,7 +13,8 @@ LOG_RETENTION_DAYS=1
 
 # Function to check if the network drive is already mounted and writable
 is_mounted() {
-    mount | grep -q "$MOUNT_POINT" && [ -w "$MOUNT_POINT" ]
+    mount | awk -v path="$MOUNT_POINT" 'index($0, " on " path " (") { found = 1 } END { exit !found }' \
+        && [ -w "$MOUNT_POINT" ]
 }
 
 # Function to URL-encode a string using pure bash (no Python dependency)
@@ -35,13 +36,14 @@ url_encode() {
 # Function to back up logs and clean old backups
 backup_and_clean_logs() {
     local log_file=$1
-    local backup_file="${log_file}.$(date +%Y%m%d).backup"
+    local backup_file="${log_file}.$(date +%Y%m%d-%H%M%S).$$.backup"
 
     if [ -f "$log_file" ]; then
         mv "$log_file" "$backup_file"
     fi
 
-    find "$(dirname "$log_file")" -name "$(basename "$log_file")*.backup" -mtime +$LOG_RETENTION_DAYS -exec rm {} \; || true
+    find "$(dirname "$log_file")" -name "$(basename "$log_file")*.backup" \
+        -mtime "+$LOG_RETENTION_DAYS" -exec rm -f {} \; || true
 }
 
 # Backup and clean both log files
