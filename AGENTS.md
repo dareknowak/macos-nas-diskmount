@@ -21,3 +21,7 @@ When the user asks to apply a repository change to the live installation:
 4. Keep real NAS settings out of terminal output, diffs, notes, commits, and GitHub.
 
 The intended workflow is to push template changes through a GitHub branch and pull request, then separately synchronize the relevant logic and plist behavior into the live files when requested.
+
+## Reloading the LaunchAgent
+
+After changing the live shell script or installed plist, including after publishing corresponding template changes, always ask the user whether they want the LaunchAgent restarted/reloaded to apply the changes. Do not reload it until the user explicitly confirms. Explain that loading this agent runs the script immediately because the plist has `RunAtLoad` enabled.
