@@ -1,78 +1,91 @@
 # macos-nas-diskmount
-MacOS NAS disk mount via launchd plist
 
-# Problem and solution
-* Whenever my Mac mini goes to sleep or is rebooted, I have to manually reconnect/mount my NAS drives using Finder.
-* This causes "Disk Not Ejected Properly" notifications and makes network-backed apps (e.g. Foobar2000 playing FLAC files) lose access to their libraries.
-* The script and `.plist` in this repo automatically mount the SMB share on login, after sleep, and after reboot — and re-mount it if it drops.
+Mount an SMB share on macOS with a user LaunchAgent. This repository keeps two implementations side by side:
 
-# Prerequisites
+- [`versions/bash/`](versions/bash/) — Bash version (`media_nas_connect.sh`)
+- [`versions/python/`](versions/python/) — Python 3 version (`media_nas_connect.py`)
 
-## 1. Store your NAS password in macOS Keychain
+Choose one implementation and use the script and matching plist from that same folder. The templates contain placeholders only; keep your real NAS settings in your local installed copy, not in Git.
+
+## Requirements
+
+- macOS with `mount_smbfs` and the `security` command
+- An SMB NAS share and a macOS user account that can access it
+- For the Python version, Python 3 installed. Use the full path to that Python interpreter in the plist; launchd does not load your interactive shell's `PATH`.
+
+## Configure Keychain and mount point
+
+Store the NAS password in macOS Keychain. The account and service values must match the username and server address configured in the script:
+
 ```bash
 security add-generic-password -a "YOUR_NAS_USERNAME" -s "YOUR_NAS_SERVER_NAME" -w
-```
-Replace `YOUR_NAS_USERNAME` with your NAS username and `YOUR_NAS_SERVER_NAME` with the NAS hostname or IP. You will be prompted to enter the password.
-
-## 2. Create the mount point directory
-```bash
 mkdir -p ~/NAS_media_mountpoint
 ```
 
-## 3. Configure the script
-Edit `media_nas_connect.sh` and replace the placeholder values:
+The password is prompted for and retrieved by the script when it runs. It is not stored in either script or plist.
+
+## Configure and install one version
+
+Copy the chosen version's script to a stable location, then edit the copied script and replace its placeholder NAS settings. The Bash settings are in `versions/bash/media_nas_connect.sh`; the Python settings are near the top of `versions/python/media_nas_connect.py`.
+
+For example, to install the Bash version:
+
 ```bash
-MOUNT_POINT="$HOME/NAS_media_mountpoint"
-SERVER_ADDRESS="YOUR_NAS_SERVER_NAME"   # must match the -s value used in Keychain above
-SHARE_NAME="YOUR_SHARE_NAME"
-USERNAME="YOUR_NAS_USERNAME"            # must match the -a value used in Keychain above
+mkdir -p ~/Tools
+cp versions/bash/media_nas_connect.sh ~/Tools/media_nas_connect.sh
+chmod 700 ~/Tools/media_nas_connect.sh
 ```
 
-## 4. Install the script
+For Python, use a corresponding filename such as `~/Tools/media_nas_connect.py`:
+
 ```bash
-cp media_nas_connect.sh /usr/local/bin/media_nas_connect.sh
-chmod +x /usr/local/bin/media_nas_connect.sh
+mkdir -p ~/Tools
+cp versions/python/media_nas_connect.py ~/Tools/media_nas_connect.py
+chmod 700 ~/Tools/media_nas_connect.py
 ```
 
-## 5. Configure and install the plist
-Edit `com.user.remountnetworkdrive.plist` and replace `/path/to/media_nas_connect.sh` with the actual path (e.g. `/usr/local/bin/media_nas_connect.sh`).
+Edit the matching plist template in the same version folder. Set its script argument to the full path of the installed script. In the Python plist, also set the first `ProgramArguments` entry to the full path of your Python 3 interpreter. Then install the plist:
 
-Then copy it to `~/Library/LaunchAgents/` (no `sudo` needed — this is a user-level agent):
 ```bash
-cp com.user.remountnetworkdrive.plist ~/Library/LaunchAgents/com.user.remountnetworkdrive.plist
+mkdir -p ~/Library/LaunchAgents
+cp versions/bash/com.user.remountnetworkdrive.plist ~/Library/LaunchAgents/com.user.remountnetworkdrive.plist
 ```
 
-## 6. Load the agent
+Use `versions/python/com.user.remountnetworkdrive.plist` instead for the Python implementation. The plist is a template: update its paths before loading it. Keep only one implementation installed under the `com.user.remountnetworkdrive` label at a time.
+
+Load the user LaunchAgent to start it:
+
 ```bash
 launchctl load ~/Library/LaunchAgents/com.user.remountnetworkdrive.plist
 ```
-The agent will also auto-load on reboot. To unload it:
+
+The agent runs the script immediately when loaded (`RunAtLoad`), checks every five minutes, and also responds to volume mount events. To stop it:
+
 ```bash
 launchctl unload ~/Library/LaunchAgents/com.user.remountnetworkdrive.plist
 ```
 
-# Using the `local/` directory (recommended)
-The `local/` directory is gitignored. Copy the files there and fill in your real values — they will never be committed:
-```
-local/
-├── media_nas_connect.sh                  # your real configured script
-└── com.user.remountnetworkdrive.plist    # your real configured plist
-```
+## Behavior and logs
 
-# Security notes
-* The password is retrieved from Keychain at runtime — it is never stored in the script.
-* Log files are created with `chmod 600` (owner read/write only).
-* **Known limitation**: `mount_smbfs` receives the password as part of the SMB URL, which is briefly visible in `ps` output during mounting. This is a limitation of `mount_smbfs` and cannot be avoided without a wrapper utility.
+Both implementations retrieve the password from Keychain, create the mount point if needed, check whether the share is mounted and writable, and mount it when necessary. They rotate the current log files on each run and remove backups older than one day. Logs are stored in `~/Library/Logs/remount_network_drive/`:
 
-# Logs
-Log files are stored in `~/Library/Logs/remount_network_drive/` (persists across reboots):
 ```bash
 tail -f ~/Library/Logs/remount_network_drive/remount_network_drive.log
 tail -f ~/Library/Logs/remount_network_drive/remount_network_drive_error.log
-# or both at once:
-tail -f ~/Library/Logs/remount_network_drive/remount*
 ```
-Logs older than 1 day are automatically rotated (configurable via `LOG_RETENTION_DAYS` in the script).
 
----
-#### NOTE: tested on macOS Sonoma, Sequoia 15.0.1 (24A348)
+The log files are restricted to the current user. `mount_smbfs` receives the password as part of the SMB URL, so it may be briefly visible in process listings while the mount command runs.
+
+## Repository layout
+
+```text
+versions/
+├── bash/
+│   ├── media_nas_connect.sh
+│   └── com.user.remountnetworkdrive.plist
+└── python/
+    ├── media_nas_connect.py
+    └── com.user.remountnetworkdrive.plist
+```
+
+Tested on macOS Sonoma and Sequoia 15.0.1.

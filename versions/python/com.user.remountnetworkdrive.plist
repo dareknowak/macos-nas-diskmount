@@ -7,31 +7,21 @@
 
     <key>ProgramArguments</key>
     <array>
-        <string>/bin/bash</string>
-        <string>/path/to/media_nas_connect.sh</string>
+        <string>/usr/bin/python3</string>
+        <string>/path/to/versions/python/media_nas_connect.py</string>
     </array>
 
-    <!-- Run the script at load -->
     <key>RunAtLoad</key>
     <true/>
-
-    <!-- Only restart the script if it exits with a non-zero status (failure).
-         SuccessfulExit: false means "do NOT keep alive after a clean exit". -->
     <key>KeepAlive</key>
     <dict>
         <key>SuccessfulExit</key>
         <false/>
     </dict>
-
-    <!-- Minimum seconds between restarts to prevent rapid respawn loops -->
     <key>ThrottleInterval</key>
     <integer>30</integer>
-
-    <!-- Retry periodically so a sleeping/offline NAS is checked after wake. -->
     <key>StartInterval</key>
     <integer>300</integer>
-
-    <!-- Also check when macOS reports a volume mount event. -->
     <key>StartOnMount</key>
     <true/>
 </dict>
