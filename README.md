@@ -2,6 +2,10 @@
 
 Mount an SMB share on macOS with a user LaunchAgent. This repository keeps two implementations side by side:
 
+## Problem and solution
+
+After a Mac mini sleeps or restarts, mounted NAS shares may disconnect. Reconnecting them manually can lead to “Disk Not Ejected Properly” notifications and can interrupt network backed apps such as Foobar2000 when they need files from the NAS. The LaunchAgent periodically checks the mount and reconnects the share when needed, including after login or restart.
+
 - [`versions/bash/`](versions/bash/) — Bash version (`media_nas_connect.sh`)
 - [`versions/python/`](versions/python/) — Python 3 version (`media_nas_connect.py`)
 
