@@ -4,7 +4,7 @@ Mount an SMB share on macOS with a user LaunchAgent. This repository keeps two i
 
 ## Problem and solution
 
-After a Mac mini sleeps or restarts, mounted NAS shares may disconnect. Reconnecting them manually can lead to “Disk Not Ejected Properly” notifications and can interrupt network backed apps such as Foobar2000 when they need files from the NAS. The LaunchAgent periodically checks the mount and reconnects the share when needed, including after login or restart.
+Whenever my Mac mini goes to sleep or is rebooted, I have to manually reconnect or mount the NAS drives using Finder. This can cause “Disk Not Ejected Properly” notifications and interrupt network backed apps such as Foobar2000 when they need files from the NAS. The script and LaunchAgent mount the SMB share at login, check it periodically and when macOS reports a volume mount event, and mount it again if it drops.
 
 - [`versions/bash/`](versions/bash/) — Bash version (`media_nas_connect.sh`)
 - [`versions/python/`](versions/python/) — Python 3 version (`media_nas_connect.py`)
@@ -17,6 +17,17 @@ Choose one implementation and use the script and matching plist from that same f
 - An SMB NAS share and a macOS user account that can access it
 - For the Python version, Python 3 installed. Use the full path to that Python interpreter in the plist; launchd does not load your interactive shell's `PATH`.
 
+## Configure the script
+
+Replace the placeholders in the selected version's script. The mount point should match the directory you create below. `SERVER_ADDRESS` must match the Keychain service value, and `USERNAME` must match the Keychain account value:
+
+```text
+MOUNT_POINT:    ~/NAS_media_mountpoint
+SERVER_ADDRESS: YOUR_NAS_SERVER_NAME
+SHARE_NAME:     YOUR_SHARE_NAME
+USERNAME:       YOUR_NAS_USERNAME
+```
+
 ## Configure Keychain and mount point
 
 Store the NAS password in macOS Keychain. The account and service values must match the username and server address configured in the script:
@@ -27,6 +38,18 @@ mkdir -p ~/NAS_media_mountpoint
 ```
 
 The password is prompted for and retrieved by the script when it runs. It is not stored in either script or plist.
+
+## Keep a local configured copy (optional)
+
+The `local/` directory is ignored by Git. Copy one implementation there to edit and keep your private NAS settings out of commits:
+
+```bash
+mkdir -p local
+cp versions/bash/media_nas_connect.sh local/media_nas_connect.sh
+cp versions/bash/com.user.remountnetworkdrive.plist local/com.user.remountnetworkdrive.plist
+```
+
+For Python, copy the corresponding files from `versions/python/` instead. Configure the local script and plist. When following the install commands below, use the files in `local/` as the copy sources instead of the `versions/` paths.
 
 ## Configure and install one version
 
@@ -69,6 +92,8 @@ The agent runs the script immediately when loaded (`RunAtLoad`), checks every fi
 launchctl unload ~/Library/LaunchAgents/com.user.remountnetworkdrive.plist
 ```
 
+The LaunchAgent is a user agent, so no `sudo` is needed. It will load again at the next login after being loaded successfully.
+
 ## Behavior and logs
 
 Both implementations retrieve the password from Keychain, create the mount point if needed, check whether the share is mounted and writable, and mount it when necessary. They rotate the current log files on each run and remove backups older than one day. Logs are stored in `~/Library/Logs/remount_network_drive/`:
@@ -78,7 +103,7 @@ tail -f ~/Library/Logs/remount_network_drive/remount_network_drive.log
 tail -f ~/Library/Logs/remount_network_drive/remount_network_drive_error.log
 ```
 
-The log files are restricted to the current user. `mount_smbfs` receives the password as part of the SMB URL, so it may be briefly visible in process listings while the mount command runs.
+The log files are created with owner-only read and write permissions (`chmod 600`). `mount_smbfs` receives the password as part of the SMB URL, so it may be briefly visible in `ps` output while the mount command runs. This is a limitation of `mount_smbfs`.
 
 ## Repository layout
 
@@ -92,4 +117,4 @@ versions/
     └── com.user.remountnetworkdrive.plist
 ```
 
-Tested on macOS Sonoma and Sequoia 15.0.1.
+Tested on macOS Sonoma and macOS Sequoia 15.0.1 (24A348).
