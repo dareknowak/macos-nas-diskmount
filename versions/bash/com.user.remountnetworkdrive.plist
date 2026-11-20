@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.user.remountnetworkdrive</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/bash</string>
+        <string>/path/to/versions/bash/media_nas_connect.sh</string>
+    </array>
+
+    <!-- Run the script immediately when the LaunchAgent loads. -->
+    <key>RunAtLoad</key>
+    <true/>
+
+    <!-- Retry after failures, but do not keep the script running after success. -->
+    <key>KeepAlive</key>
+    <dict>
+        <key>SuccessfulExit</key>
+        <false/>
+    </dict>
+    <!-- Minimum delay between retries to prevent rapid restart loops. -->
+    <key>ThrottleInterval</key>
+    <integer>30</integer>
+
+    <!-- Check periodically so an unavailable NAS is retried. -->
+    <key>StartInterval</key>
+    <integer>300</integer>
+
+    <!-- Also run when macOS reports a volume mount event. -->
+    <key>StartOnMount</key>
+    <true/>
+</dict>
+</plist>
