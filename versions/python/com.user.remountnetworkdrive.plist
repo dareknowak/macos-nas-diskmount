@@ -11,17 +11,25 @@
         <string>/path/to/versions/python/media_nas_connect.py</string>
     </array>
 
+    <!-- Run the script immediately when the LaunchAgent loads. -->
     <key>RunAtLoad</key>
     <true/>
+
+    <!-- Retry after failures, but do not keep the script running after success. -->
     <key>KeepAlive</key>
     <dict>
         <key>SuccessfulExit</key>
         <false/>
     </dict>
+    <!-- Minimum delay between retries to prevent rapid restart loops. -->
     <key>ThrottleInterval</key>
     <integer>30</integer>
+
+    <!-- Check periodically so an unavailable NAS is retried. -->
     <key>StartInterval</key>
     <integer>300</integer>
+
+    <!-- Also run when macOS reports a volume mount event. -->
     <key>StartOnMount</key>
     <true/>
 </dict>
